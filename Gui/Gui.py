@@ -49,7 +49,7 @@ class ThreePanelsGUI:
             checkbutton1 = tk.Checkbutton(sub_panel, text=f"Checkbutton 1-{i+1}", variable=var1, onvalue=1, offvalue=0)
             checkbutton1.pack(side=tk.LEFT, padx=5)
             var2 = tk.IntVar(value=0)
-            checkbutton2 = tk.Checkbutton(sub_panel, text=f"Checkbutton 2-{i+1}", variable=var2, onvalue=1, offvalue=0)
+            checkbutton2 = tk.Checkbutton(sub_panel, text=f"Hide", variable=var2, onvalue=1, offvalue=0)
             checkbutton2.pack(side=tk.LEFT, padx=5)
             text = tk.Label(sub_panel, text=f"Text {i+1}", bg="lightblue")
             text.pack(side=tk.LEFT, padx=5)
@@ -79,9 +79,6 @@ class ThreePanelsGUI:
             var1 = tk.IntVar(value=0)
             checkbutton1 = tk.Checkbutton(sub_panel, text=f"Checkbutton 1-{i+1}", variable=var1, onvalue=1, offvalue=0)
             checkbutton1.pack(side=tk.LEFT, padx=5)
-            var2 = tk.IntVar(value=0)
-            checkbutton2 = tk.Checkbutton(sub_panel, text=f"Checkbutton 2-{i+1}", variable=var2, onvalue=1, offvalue=0)
-            checkbutton2.pack(side=tk.LEFT, padx=5)
             text = tk.Label(sub_panel, text=f"Text {i+1}", bg="lightblue")
             text.pack(side=tk.LEFT, padx=5)
 
