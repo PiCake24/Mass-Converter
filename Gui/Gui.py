@@ -1,11 +1,15 @@
+import multiprocessing
 import tkinter as tk
+from msilib import Control
 from tkinter import scrolledtext
 import threading
+
+from Data.DAO import Dao
 from MainControl import Control
 
 
 class ThreePanelsGUI:
-    def __init__(self, root):
+    def __init__(self, root, daoList):
         self.root = root
         self.root.title("Mass-Converter")
         self.root.geometry("1000x800")
@@ -41,17 +45,17 @@ class ThreePanelsGUI:
 
         # Add 50 sub-panels with Checkbuttons to the left_inner_frame
         self.left_checkbuttons = []
-        for i in range(50):
+        for i in range(len(daoList)):
             sub_panel = tk.Frame(self.left_inner_frame, bg="lightblue", pady=10)
             sub_panel.pack(fill=tk.X, padx=10, pady=5)
 
             var1 = tk.IntVar(value=0)
-            checkbutton1 = tk.Checkbutton(sub_panel, text=f"Checkbutton 1-{i+1}", variable=var1, onvalue=1, offvalue=0)
+            checkbutton1 = tk.Checkbutton(sub_panel, text=f"Activate", variable=var1, onvalue=1, offvalue=0)
             checkbutton1.pack(side=tk.LEFT, padx=5)
             var2 = tk.IntVar(value=0)
             checkbutton2 = tk.Checkbutton(sub_panel, text=f"Hide", variable=var2, onvalue=1, offvalue=0)
             checkbutton2.pack(side=tk.LEFT, padx=5)
-            text = tk.Label(sub_panel, text=f"Text {i+1}", bg="lightblue")
+            text = tk.Label(sub_panel, text=daoList[i].champion, bg="lightblue")
             text.pack(side=tk.LEFT, padx=5)
 
             self.left_checkbuttons.append((var1, var2))
@@ -72,14 +76,14 @@ class ThreePanelsGUI:
 
         # Add 50 sub-panels with Checkbuttons to the right_inner_frame
         self.right_checkbuttons = []
-        for i in range(50):
+        for i in range(len(daoList[0].skin_list)):
             sub_panel = tk.Frame(self.right_inner_frame, bg="lightblue", pady=10)
             sub_panel.pack(fill=tk.X, padx=10, pady=5)
 
             var1 = tk.IntVar(value=0)
             checkbutton1 = tk.Checkbutton(sub_panel, text=f"Checkbutton 1-{i+1}", variable=var1, onvalue=1, offvalue=0)
             checkbutton1.pack(side=tk.LEFT, padx=5)
-            text = tk.Label(sub_panel, text=f"Text {i+1}", bg="lightblue")
+            text = tk.Label(sub_panel, text=f"skin {daoList[0].skin_list[i]}", bg="lightblue")
             text.pack(side=tk.LEFT, padx=5)
 
             self.right_checkbuttons.append((var1, var2))
@@ -99,21 +103,11 @@ class ThreePanelsGUI:
         self.start_button = tk.Button(self.bottom_panel, text="Start", command=self.start_program)
         self.start_button.pack(side=tk.RIGHT, padx=20, pady=10)
 
-        # Variable to control the program execution
-        self.stop_event = threading.Event()
-        self.thread = None  # Placeholder for the thread object
-
     def start_program(self):
-        if self.thread and self.thread.is_alive():
-            self.log_area.insert(tk.END, "A task is already running. Please wait for it to finish or interrupt it.\n")
-            return
-
-        self.stop_event.clear()  # Clear the stop event flag
-        self.thread = threading.Thread(target=self.execute_control)
-        self.thread.start()
+        pass
 
     def stop_program(self):
-        self.stop_event.set()
+        pass
 
     def execute_control(self):
         # Function to execute MainControl.py's control method
@@ -123,15 +117,18 @@ class ThreePanelsGUI:
             self.root.update_idletasks()  # Update the GUI
 
         try:
-            Control.control(log_callback, self.stop_event)
+            Control.control(log_callback)
         except Exception as e:
             self.log_area.insert(tk.END, f"Error: {str(e)}\n")
             self.log_area.see(tk.END)  # Scroll to the bottom
 
-        # Reset the thread reference when done
-        self.thread = None
-
 if __name__ == "__main__":
     root = tk.Tk()
-    app = ThreePanelsGUI(root)
+    daoList = []
+    dao = Dao("akali", [1, 3, 4, 5, 23], True)
+    daoList.append(dao)
+    dao = Dao("leona", [1], True)
+    daoList.append(dao)
+
+    app = ThreePanelsGUI(root, daoList)
     root.mainloop()
