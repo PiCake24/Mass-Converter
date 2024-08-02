@@ -1,4 +1,4 @@
-class Dao:
+class Champion:
 
     def __init__(self, champion, skin_list, active):
         self.champion = champion

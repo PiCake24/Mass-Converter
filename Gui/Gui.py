@@ -4,7 +4,8 @@ from msilib import Control
 from tkinter import scrolledtext
 import threading
 
-from Data.DAO import Dao
+from Data.Champion import Champion
+from Data.Skin import Skin
 from MainControl import Control
 
 
@@ -13,6 +14,7 @@ class ThreePanelsGUI:
         self.root = root
         self.root.title("Mass-Converter")
         self.root.geometry("1000x800")
+        self.daoList = daoList
 
         # Create the top panel with buttons
         self.top_panel = tk.Frame(root, bg="lightblue", height=50)
@@ -20,7 +22,6 @@ class ThreePanelsGUI:
         self.top_panel.pack_propagate(False)
         self.options_button = tk.Button(self.top_panel, text="Options")
         self.options_button.pack(side=tk.TOP, anchor=tk.W, padx=20, pady=10)
-
 
         # Create the middle panel with two scrollable text areas
         self.middle_panel = tk.Frame(root, bg="lightgreen", height=500)
@@ -43,20 +44,21 @@ class ThreePanelsGUI:
         self.left_canvas.create_window((0, 0), window=self.left_inner_frame, anchor="nw")
         self.left_inner_frame.bind("<Configure>", lambda event: self.left_canvas.configure(scrollregion=self.left_canvas.bbox("all")))
 
-        # Add 50 sub-panels with Checkbuttons to the left_inner_frame
+        # Add buttons with checkboxes to the left side
         self.left_checkbuttons = []
         for i in range(len(daoList)):
-            sub_panel = tk.Frame(self.left_inner_frame, bg="lightblue", pady=10)
-            sub_panel.pack(fill=tk.X, padx=10, pady=5)
+            button_frame = tk.Frame(self.left_inner_frame, bg="lightblue", pady=10)
+            button_frame.pack(fill=tk.X, padx=10, pady=5)
 
             var1 = tk.IntVar(value=0)
-            checkbutton1 = tk.Checkbutton(sub_panel, text=f"Activate", variable=var1, onvalue=1, offvalue=0)
+            checkbutton1 = tk.Checkbutton(button_frame, text=f"Activate", variable=var1, onvalue=1, offvalue=0)
             checkbutton1.pack(side=tk.LEFT, padx=5)
             var2 = tk.IntVar(value=0)
-            checkbutton2 = tk.Checkbutton(sub_panel, text=f"Hide", variable=var2, onvalue=1, offvalue=0)
+            checkbutton2 = tk.Checkbutton(button_frame, text=f"Hide", variable=var2, onvalue=1, offvalue=0)
             checkbutton2.pack(side=tk.LEFT, padx=5)
-            text = tk.Label(sub_panel, text=daoList[i].champion, bg="lightblue")
-            text.pack(side=tk.LEFT, padx=5)
+            button = tk.Button(button_frame, text=daoList[i].champion, bg="lightblue",
+                               command=lambda i=i: self.show_skins(i))
+            button.pack(side=tk.LEFT, padx=5)
 
             self.left_checkbuttons.append((var1, var2))
 
@@ -74,20 +76,6 @@ class ThreePanelsGUI:
         self.right_canvas.create_window((0, 0), window=self.right_inner_frame, anchor="nw")
         self.right_inner_frame.bind("<Configure>", lambda event: self.right_canvas.configure(scrollregion=self.right_canvas.bbox("all")))
 
-        # Add 50 sub-panels with Checkbuttons to the right_inner_frame
-        self.right_checkbuttons = []
-        for i in range(len(daoList[0].skin_list)):
-            sub_panel = tk.Frame(self.right_inner_frame, bg="lightblue", pady=10)
-            sub_panel.pack(fill=tk.X, padx=10, pady=5)
-
-            var1 = tk.IntVar(value=0)
-            checkbutton1 = tk.Checkbutton(sub_panel, text=f"Checkbutton 1-{i+1}", variable=var1, onvalue=1, offvalue=0)
-            checkbutton1.pack(side=tk.LEFT, padx=5)
-            text = tk.Label(sub_panel, text=f"skin {daoList[0].skin_list[i]}", bg="lightblue")
-            text.pack(side=tk.LEFT, padx=5)
-
-            self.right_checkbuttons.append((var1, var2))
-
         # Create the bottom panel with log and buttons
         self.bottom_panel = tk.Frame(root, bg="lightcoral", height=250)
         self.bottom_panel.pack(fill=tk.X, padx=20, pady=20)
@@ -103,11 +91,36 @@ class ThreePanelsGUI:
         self.start_button = tk.Button(self.bottom_panel, text="Start", command=self.start_program)
         self.start_button.pack(side=tk.RIGHT, padx=20, pady=10)
 
+        self.right_checkbuttons = []
+
     def start_program(self):
         pass
 
     def stop_program(self):
         pass
+
+    def show_skins(self, champion_index):
+        # Clear the right_inner_frame
+        for widget in self.right_inner_frame.winfo_children():
+            widget.destroy()
+
+        # Add sub-panels for the skins of the selected champion
+        selected_champion = self.daoList[champion_index]
+        for i, skin in enumerate(selected_champion.skin_list):
+            sub_panel = tk.Frame(self.right_inner_frame, bg="lightblue", pady=10)
+            sub_panel.pack(fill=tk.X, padx=10, pady=5)
+
+            var1 = tk.IntVar(value=0)
+            checkbutton1 = tk.Checkbutton(sub_panel, text=f"Checkbutton {i + 1}", variable=var1, onvalue=1, offvalue=0)
+            checkbutton1.pack(side=tk.LEFT, padx=5)
+            text = tk.Label(sub_panel, text=f"skin {skin.skin_number}", bg="lightblue")
+            text.pack(side=tk.LEFT, padx=5)
+
+            self.right_checkbuttons.append((var1))
+
+        # Update the right canvas scroll region
+        self.right_inner_frame.update_idletasks()
+        self.right_canvas.configure(scrollregion=self.right_canvas.bbox("all"))
 
     def execute_control(self):
         # Function to execute MainControl.py's control method
@@ -124,11 +137,11 @@ class ThreePanelsGUI:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    daoList = []
-    dao = Dao("akali", [1, 3, 4, 5, 23], True)
-    daoList.append(dao)
-    dao = Dao("leona", [1], True)
-    daoList.append(dao)
+    championList = []
+    champion = Champion("akali", [Skin(1, 2, True), Skin(2, 25, False), Skin(5, 5, True)], True)
+    championList.append(champion)
+    champion = Champion("leona", [Skin(1, 2, False)], True)
+    championList.append(champion)
 
-    app = ThreePanelsGUI(root, daoList)
+    app = ThreePanelsGUI(root, championList)
     root.mainloop()
