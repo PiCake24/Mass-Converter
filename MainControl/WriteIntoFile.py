@@ -1,6 +1,6 @@
 #copy file and write it into it again
 # change size
-def write_into(scale):
+def write_into(root_path, champion, skin_number, scale):
     lines = []
     with open(r"D:\Riot Games\League of Legends\Game\DATA\FINAL\Champions\data\characters\akali\skins\skin0.py", "r") as file:
         for line in file:
@@ -20,5 +20,3 @@ def write_into(scale):
     print(output)
     with open(r"D:\Riot Games\League of Legends\Game\DATA\FINAL\Champions\data\characters\akali\skins\skin0.py", "w") as file:
         file.write(output)
-
-write_into(3)

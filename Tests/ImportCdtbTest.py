@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 
-from MainControl.Import import unpack_file, download_hashes
+from MainControl.ImportCdtb import unpack_file, download_hashes
 
 
 class MyTestCase(unittest.TestCase):
