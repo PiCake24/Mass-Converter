@@ -1,9 +1,8 @@
 import threading
+import time
 import tkinter as tk
-from tkinter import scrolledtext
+from tkinter import scrolledtext, filedialog
 
-from Data.Champion import Champion
-from Data.Skin import Skin
 from MainControl import Control
 
 
@@ -13,20 +12,43 @@ class ThreePanelsGUI:
         self.root = root
         self.root.title("Mass-Converter")
         self.root.geometry("1000x800")
-        self.daoList = champion_list
+        self.champion_list = champion_list
 
+        self.right_checkbuttons = []
+        self.stop_event = threading.Event()
+
+        # Show loading screen
+        self.loading_screen = LoadingScreen(self.root)
+        self.root.update()
+
+        # Perform initialization in a separate thread
+        self.thread2 = threading.Thread(target=self.initialize_gui)
+        self.thread2.start()
+
+    def initialize_gui(self):
+        # Simulate time-consuming initialization (e.g., calculations)
+        time.sleep(3)  # Replace this with actual initialization code
+
+
+        # Close the loading screen and show the main GUI
+        self.root.after(0, self.close_loading_screen)
+
+    def create_main_gui(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
         # Create the top panel with buttons
-        self.top_panel = tk.Frame(root, bg="lightblue", height=50)
+        self.top_panel = tk.Frame(self.root, bg="lightblue", height=50)
         self.top_panel.pack(fill=tk.X)
         self.top_panel.pack_propagate(False)
-        self.options_button = tk.Button(self.top_panel, text="Options")
+        self.options_button = tk.Button(self.top_panel, text="Options", command=self.show_options_gui)
         self.options_button.pack(side=tk.TOP, anchor=tk.W, padx=20, pady=10)
 
         # Create the middle panel with two scrollable text areas
-        self.middle_panel = tk.Frame(root, bg="lightgreen", height=500)
+        self.middle_panel = tk.Frame(self.root, bg="lightgreen", height=500)
         self.middle_panel.pack(fill=tk.X)
         self.show_hidden_var = tk.IntVar(value=0)
-        self.x_button = tk.Checkbutton(self.middle_panel, text="Unhide hidden champions", variable=self.show_hidden_var, command=self.toggle_show_hidden)
+        self.x_button = tk.Checkbutton(self.middle_panel, text="Unhide hidden champions", variable=self.show_hidden_var,
+                                       command=self.toggle_show_hidden)
         self.x_button.pack(side=tk.TOP, anchor=tk.W, padx=20, pady=10)
         self.middle_panel.pack_propagate(False)
 
@@ -42,13 +64,14 @@ class ThreePanelsGUI:
 
         self.left_inner_frame = tk.Frame(self.left_canvas, bg="lightyellow")
         self.left_canvas.create_window((0, 0), window=self.left_inner_frame, anchor="nw")
-        self.left_inner_frame.bind("<Configure>", lambda event: self.left_canvas.configure(scrollregion=self.left_canvas.bbox("all")))
+        self.left_inner_frame.bind("<Configure>",
+                                   lambda event: self.left_canvas.configure(scrollregion=self.left_canvas.bbox("all")))
 
         # Add buttons with checkboxes to the left side
         self.left_checkbuttons = []
         self.left_panels = []
         self.panel_positions = {}  # Store original positions
-        for i, champion in enumerate(champion_list):
+        for i, champion in enumerate(self.champion_list):
             button_frame = tk.Frame(self.left_inner_frame, bg="lightblue", pady=10)
             button_frame.pack(fill=tk.X, padx=10, pady=5)
 
@@ -56,7 +79,9 @@ class ThreePanelsGUI:
             checkbutton1 = tk.Checkbutton(button_frame, text=f"Activate", variable=var1, onvalue=1, offvalue=0)
             checkbutton1.pack(side=tk.LEFT, padx=5)
             var2 = tk.IntVar(value=0)
-            checkbutton2 = tk.Checkbutton(button_frame, text=f"Hide", variable=var2, onvalue=1, offvalue=0, command=lambda bf=button_frame, v=var2, idx=i: self.toggle_panel_visibility(bf, v, idx))
+            checkbutton2 = tk.Checkbutton(button_frame, text=f"Hide", variable=var2, onvalue=1, offvalue=0,
+                                          command=lambda bf=button_frame, v=var2, idx=i: self.toggle_panel_visibility(
+                                              bf, v, idx))
             checkbutton2.pack(side=tk.LEFT, padx=5)
             button = tk.Button(button_frame, text=champion.champion, bg="lightblue",
                                command=lambda i=i: self.show_skins(i))
@@ -78,10 +103,11 @@ class ThreePanelsGUI:
 
         self.right_inner_frame = tk.Frame(self.right_canvas, bg="lightgrey")
         self.right_canvas.create_window((0, 0), window=self.right_inner_frame, anchor="nw")
-        self.right_inner_frame.bind("<Configure>", lambda event: self.right_canvas.configure(scrollregion=self.right_canvas.bbox("all")))
+        self.right_inner_frame.bind("<Configure>", lambda event: self.right_canvas.configure(
+            scrollregion=self.right_canvas.bbox("all")))
 
         # Create the bottom panel with log and buttons
-        self.bottom_panel = tk.Frame(root, bg="lightcoral", height=250)
+        self.bottom_panel = tk.Frame(self.root, bg="lightcoral", height=250)
         self.bottom_panel.pack(fill=tk.X, padx=20, pady=20)
         self.bottom_panel.pack_propagate(False)
 
@@ -95,12 +121,11 @@ class ThreePanelsGUI:
         self.start_button = tk.Button(self.bottom_panel, text="Start", command=self.start_program)
         self.start_button.pack(side=tk.RIGHT, padx=20, pady=10)
 
-        self.right_checkbuttons = []
-        self.stop_event = threading.Event()
+
 
     def start_program(self):
         self.start_button.config(state=tk.DISABLED)
-        #if self.thread and self.thread.is_alive():
+        # if self.thread and self.thread.is_alive():
         #    self.log_area.insert(tk.END, "A task is already running. Please wait for it to finish or interrupt it.\n")
         #    return
 
@@ -120,7 +145,7 @@ class ThreePanelsGUI:
             self.root.update_idletasks()  # Update the GUI
 
         try:
-            Control.control(log_callback, self.stop_event, self.daoList, "pathvariables")
+            Control.control(log_callback, self.stop_event, self.champion_list, "pathvariables")
             self.start_button.config(state=tk.NORMAL)
         except Exception as e:
             self.log_area.insert(tk.END, f"Error: {str(e)}\n")
@@ -133,7 +158,7 @@ class ThreePanelsGUI:
             widget.destroy()
 
         # Add sub-panels for the skins of the selected champion
-        selected_champion = self.daoList[champion_index]
+        selected_champion = self.champion_list[champion_index]
         for i, skin in enumerate(selected_champion.skin_list):
             sub_panel = tk.Frame(self.right_inner_frame, bg="lightblue", pady=10)
             sub_panel.pack(fill=tk.X, padx=10, pady=5)
@@ -170,13 +195,72 @@ class ThreePanelsGUI:
         self.repack_panels()
 
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    championList = []
-    champion = Champion("Akali", [Skin(1, 2, True), Skin(2, 25, False), Skin(5, 5, True)], True)
-    championList.append(champion)
-    champion = Champion("Leona", [Skin(1, 2, False)], True)
-    championList.append(champion)
 
-    app = ThreePanelsGUI(root, championList)
-    root.mainloop()
+    def close_loading_screen(self):
+        self.loading_screen.destroy()
+        # Continue with showing the main GUI
+        self.root.deiconify()
+
+        self.create_main_gui()
+
+    def show_options_gui(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+
+        self.options_frame = tk.Frame(self.root, bg="lightblue")
+        self.options_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.file_path_vars = [tk.StringVar() for _ in range(3)]
+
+        for i in range(3):
+            file_chooser_frame = tk.Frame(self.options_frame, bg="lightblue", pady=10)
+            file_chooser_frame.pack(fill=tk.X, padx=10, pady=5)
+
+            file_label = tk.Label(file_chooser_frame, text=f"File {i + 1}:", bg="lightblue")#TODO
+            file_label.pack(side=tk.LEFT, padx=5)
+
+            file_entry = tk.Entry(file_chooser_frame, textvariable=self.file_path_vars[i], width=50)#TODO
+            file_entry.pack(side=tk.LEFT, padx=5)
+
+            browse_button = tk.Button(file_chooser_frame, text="Browse", command=lambda i=i: self.browse_file(i))
+            browse_button.pack(side=tk.LEFT, padx=5)
+
+        back_button = tk.Button(self.options_frame, text="Back", command=self.create_main_gui)
+        back_button.pack(side=tk.BOTTOM, pady=20)
+
+    def browse_file(self, index):
+        folder_path = filedialog.askdirectory()
+        if folder_path:
+            self.file_path_vars[index].set(folder_path)#TODO
+
+
+class LoadingScreen(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Loading")
+        self.geometry("200x100")
+        self.resizable(False, False)
+        self.label = tk.Label(self, text="Loading...", font=("Helvetica", 16))
+        self.label.pack(expand=True)
+        self.spinner = tk.Label(self, text="|", font=("Helvetica", 24))
+        self.spinner.pack(expand=True)
+
+        self.animate_spinner()
+
+    def animate_spinner(self):
+        self.spinner.after(100, self.rotate_spinner)
+
+    def rotate_spinner(self):
+        current_text = self.spinner.cget("text")
+        next_text = {
+            "|": "/",
+            "/": "-",
+            "-": "\\",
+            "\\": "|"
+        }[current_text]
+        self.spinner.config(text=next_text)
+        self.animate_spinner()
+
+
+
