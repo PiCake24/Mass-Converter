@@ -3,19 +3,26 @@ import time
 import tkinter as tk
 from tkinter import scrolledtext, filedialog
 
+from Data.SystemPaths import System_paths
+from Gui.LoadingScreenGui import LoadingScreen
 from MainControl import Control
+from MainControl.LoadChampionsAndSkins import load_champs
+from MainControl.SearchForDependencyPrograms import search_for_league
 
 
 class ThreePanelsGUI:
-    def __init__(self, root, champion_list):
+    def __init__(self, root, champion_list):#TODO remove champion_list
         self.thread = None
         self.root = root
         self.root.title("Mass-Converter")
         self.root.geometry("1000x800")
         self.champion_list = champion_list
+        self.system_paths = System_paths("", "", "")
 
         self.right_checkbuttons = []
+        self.file_path_vars = [tk.StringVar() for _ in range(3)]
         self.stop_event = threading.Event()
+
 
         # Show loading screen
         self.loading_screen = LoadingScreen(self.root)
@@ -25,10 +32,11 @@ class ThreePanelsGUI:
         self.thread2 = threading.Thread(target=self.initialize_gui)
         self.thread2.start()
 
-    def initialize_gui(self):
+    def initialize_gui(self): #TODO vllt in eigen Klasse packen, hat ja direkt mit der gui nix zu tun
         # Simulate time-consuming initialization (e.g., calculations)
+        self.system_paths.riot_path = search_for_league()
+        self.champion_list = load_champs(self.system_paths)
         time.sleep(3)  # Replace this with actual initialization code
-
 
         # Close the loading screen and show the main GUI
         self.root.after(0, self.close_loading_screen)
@@ -211,56 +219,37 @@ class ThreePanelsGUI:
         self.options_frame = tk.Frame(self.root, bg="lightblue")
         self.options_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.file_path_vars = [tk.StringVar() for _ in range(3)]
+        folderchoosenames = ["Riot Path:", "Ritobin Path", "Root Path"]
 
         for i in range(3):
             file_chooser_frame = tk.Frame(self.options_frame, bg="lightblue", pady=10)
             file_chooser_frame.pack(fill=tk.X, padx=10, pady=5)
 
-            file_label = tk.Label(file_chooser_frame, text=f"File {i + 1}:", bg="lightblue")#TODO
+            file_label = tk.Label(file_chooser_frame, text=folderchoosenames[i], bg="lightblue")
             file_label.pack(side=tk.LEFT, padx=5)
 
-            file_entry = tk.Entry(file_chooser_frame, textvariable=self.file_path_vars[i], width=50)#TODO
+            file_entry = tk.Entry(file_chooser_frame, textvariable=self.file_path_vars[i], width=50)
             file_entry.pack(side=tk.LEFT, padx=5)
 
-            browse_button = tk.Button(file_chooser_frame, text="Browse", command=lambda i=i: self.browse_file(i))
+            browse_button = tk.Button(file_chooser_frame, text="Browse", command=lambda i=i: self.browse_folder(i))
             browse_button.pack(side=tk.LEFT, padx=5)
 
         back_button = tk.Button(self.options_frame, text="Back", command=self.create_main_gui)
         back_button.pack(side=tk.BOTTOM, pady=20)
 
-    def browse_file(self, index):
+    def browse_folder(self, index):
         folder_path = filedialog.askdirectory()
         if folder_path:
-            self.file_path_vars[index].set(folder_path)#TODO
+            if index == 0:
+                self.system_paths.riot_path = folder_path
+            elif index == 1:
+                self.system_paths.ritobin_path = folder_path
+            elif index == 2:
+                self.system_paths.root_path = folder_path
+            self.file_path_vars[index].set(folder_path)
 
 
-class LoadingScreen(tk.Toplevel):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.title("Loading")
-        self.geometry("200x100")
-        self.resizable(False, False)
-        self.label = tk.Label(self, text="Loading...", font=("Helvetica", 16))
-        self.label.pack(expand=True)
-        self.spinner = tk.Label(self, text="|", font=("Helvetica", 24))
-        self.spinner.pack(expand=True)
 
-        self.animate_spinner()
-
-    def animate_spinner(self):
-        self.spinner.after(100, self.rotate_spinner)
-
-    def rotate_spinner(self):
-        current_text = self.spinner.cget("text")
-        next_text = {
-            "|": "/",
-            "/": "-",
-            "-": "\\",
-            "\\": "|"
-        }[current_text]
-        self.spinner.config(text=next_text)
-        self.animate_spinner()
 
 
 

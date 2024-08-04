@@ -23,7 +23,7 @@ def control(log_callback,stop_event, champions, path_variables):
         return
     for champion in champions:
         if champion.active:
-            filepath = path_variables.league_path + "\\DATA\\FINAL\\Champions\\" + champion + ".wad.client"
+            filepath = path_variables.riot_path + "\\DATA\\FINAL\\Champions\\" + champion + ".wad.client"
             outputpath = path_variables.root_Path + "\\0WADS"
             icdtb.unpack_file(filepath, outputpath)
             for skin_number in champion.skin_list:
