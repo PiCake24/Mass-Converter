@@ -39,12 +39,7 @@ def loadskins():
 #+speichern und laden
 #auch sollte ich mir gedanken darüber machen, was passiert wenn das programm league nicht findet.(root und ritobin sind ja hierfür egal)
 
-#es sollte also normalerweise ablaufen:
-#lade gespeicherte daten
-#suche pfade zu programmen wenn daten nicht gegeben, überprüfe gespeicherte Daten sonst
-#lade champions
-#lade anzahl der skins pro champion
-#Zeige gui
+
 
 #reduizierung der größe der championliste
 #change color palette
