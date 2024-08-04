@@ -1,7 +1,7 @@
 import os
 
 from Data.Champion import Champion
-from Data.SystemPaths import System_paths
+from Data.SystemPaths import SystemPaths
 from MainControl.SearchForDependencyPrograms import search_for_league
 
 

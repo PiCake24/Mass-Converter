@@ -1,4 +1,4 @@
-from Data.SystemPaths import System_paths
+from Data.SystemPaths import SystemPaths
 from MainControl.LoadChampionsAndSkins import load_champs
 from MainControl.Saving import loading, saving
 from MainControl.SearchForDependencyPrograms import search_for_league, search_for_ritobin
@@ -14,7 +14,7 @@ def startup(root):
     champion_list, system_paths = loading()
 
     if system_paths is None:
-        system_paths = System_paths(search_for_league(), search_for_ritobin(), "")
+        system_paths = SystemPaths(search_for_league(), search_for_ritobin(), "")
     if champion_list is None:
         champion_list = load_champs(system_paths)
 
