@@ -44,16 +44,3 @@ def loading():
 
     except FileNotFoundError or json.JSONDecodeError:
         return None, None
-championList = []
-champion = Champion("Akali", [Skin(1, 2, True), Skin(2, 25, False), Skin(5, 5, True)], True)
-championList.append(champion)
-champion = Champion("Leona", [Skin(1, 2, False)], True)
-championList.append(champion)
-system_paths = System_paths('path/to/riot', 'path/to/ritobin', 'path/to/root')
-#saving(championList, system_paths)
-
-championList, system_paths = loading()
-# Now you can use championList and system_paths
-print(championList[0].champion)
-print(championList[0].skin_list[0].size)
-print(system_paths.riot_path)
