@@ -48,9 +48,10 @@ def loadskins():
 
 #reduizierung der größe der championliste
 #change color palette
-if __name__ == "__main__":
-    folder_path = search_for_league()
-    print(folder_path)
-    paths = System_paths(folder_path,"","")
-    files = load_champs(paths)
-    print(files)
+
+#when should  I save?
+#when closing program
+#when pressing run button
+#when options is pressed
+#when back button is pressed
+#maybe add a specific save button?

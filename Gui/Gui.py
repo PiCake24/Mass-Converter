@@ -1,5 +1,4 @@
 import threading
-import time
 import tkinter as tk
 from tkinter import scrolledtext, filedialog
 
@@ -23,7 +22,6 @@ class ThreePanelsGUI:
         self.file_path_vars = [tk.StringVar() for _ in range(3)]
         self.stop_event = threading.Event()
 
-
         # Show loading screen
         self.loading_screen = LoadingScreen(self.root)
         self.root.update()
@@ -34,9 +32,10 @@ class ThreePanelsGUI:
 
     def initialize_gui(self): #TODO vllt in eigen Klasse packen, hat ja direkt mit der gui nix zu tun
         # Simulate time-consuming initialization (e.g., calculations)
+
         self.system_paths.riot_path = search_for_league()
         self.champion_list = load_champs(self.system_paths)
-        time.sleep(3)  # Replace this with actual initialization code
+        #time.sleep(3)  # Replace this with actual initialization code
 
         # Close the loading screen and show the main GUI
         self.root.after(0, self.close_loading_screen)
@@ -44,20 +43,23 @@ class ThreePanelsGUI:
     def create_main_gui(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+
         # Create the top panel with buttons
         self.top_panel = tk.Frame(self.root, bg="lightblue", height=50)
         self.top_panel.pack(fill=tk.X)
         self.top_panel.pack_propagate(False)
+
+        # Options button
         self.options_button = tk.Button(self.top_panel, text="Options", command=self.show_options_gui)
-        self.options_button.pack(side=tk.TOP, anchor=tk.W, padx=20, pady=10)
+        self.options_button.pack(side=tk.LEFT, anchor=tk.W, padx=20, pady=10)
+
+        # Select Champions button
+        self.select_champions_button = tk.Button(self.top_panel, text="Select Champions", command=self.select_champions)
+        self.select_champions_button.pack(side=tk.LEFT, anchor=tk.W, padx=20, pady=10)
 
         # Create the middle panel with two scrollable text areas
         self.middle_panel = tk.Frame(self.root, bg="lightgreen", height=500)
         self.middle_panel.pack(fill=tk.X)
-        self.show_hidden_var = tk.IntVar(value=0)
-        self.x_button = tk.Checkbutton(self.middle_panel, text="Unhide hidden champions", variable=self.show_hidden_var,
-                                       command=self.toggle_show_hidden)
-        self.x_button.pack(side=tk.TOP, anchor=tk.W, padx=20, pady=10)
         self.middle_panel.pack_propagate(False)
 
         # Left scrollable frame with multiple sub-panels
@@ -82,20 +84,15 @@ class ThreePanelsGUI:
         for i, champion in enumerate(self.champion_list):
             button_frame = tk.Frame(self.left_inner_frame, bg="lightblue", pady=10)
             button_frame.pack(fill=tk.X, padx=10, pady=5)
-
             var1 = tk.IntVar(value=0)
             checkbutton1 = tk.Checkbutton(button_frame, text=f"Activate", variable=var1, onvalue=1, offvalue=0)
             checkbutton1.pack(side=tk.LEFT, padx=5)
-            var2 = tk.IntVar(value=0)
-            checkbutton2 = tk.Checkbutton(button_frame, text=f"Hide", variable=var2, onvalue=1, offvalue=0,
-                                          command=lambda bf=button_frame, v=var2, idx=i: self.toggle_panel_visibility(
-                                              bf, v, idx))
-            checkbutton2.pack(side=tk.LEFT, padx=5)
+            #var2 = tk.IntVar(value=0)
             button = tk.Button(button_frame, text=champion.champion, bg="lightblue",
                                command=lambda i=i: self.show_skins(i))
             button.pack(side=tk.LEFT, padx=5)
 
-            self.left_checkbuttons.append((var1, var2))
+            self.left_checkbuttons.append(var1)
             self.left_panels.append(button_frame)
             self.panel_positions[button_frame] = i
 
@@ -128,8 +125,6 @@ class ThreePanelsGUI:
         self.interrupt_button.pack(side=tk.RIGHT, padx=20, pady=10)
         self.start_button = tk.Button(self.bottom_panel, text="Start", command=self.start_program)
         self.start_button.pack(side=tk.RIGHT, padx=20, pady=10)
-
-
 
     def start_program(self):
         self.start_button.config(state=tk.DISABLED)
@@ -202,8 +197,6 @@ class ThreePanelsGUI:
     def toggle_show_hidden(self):
         self.repack_panels()
 
-
-
     def close_loading_screen(self):
         self.loading_screen.destroy()
         # Continue with showing the main GUI
@@ -214,7 +207,6 @@ class ThreePanelsGUI:
     def show_options_gui(self):
         for widget in self.root.winfo_children():
             widget.destroy()
-
 
         self.options_frame = tk.Frame(self.root, bg="lightblue")
         self.options_frame.pack(fill=tk.BOTH, expand=True)
@@ -247,9 +239,3 @@ class ThreePanelsGUI:
             elif index == 2:
                 self.system_paths.root_path = folder_path
             self.file_path_vars[index].set(folder_path)
-
-
-
-
-
-
