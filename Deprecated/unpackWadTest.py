@@ -2,8 +2,7 @@ import shutil
 import unittest
 import os
 
-from MainControl.getPythonPath import get_python_path_windows
-from MainControl.unpackChampions import unpack_all_wad
+from Deprecated.unpackChampions import unpack_all_wad
 
 
 class TestFileHandler(unittest.TestCase):

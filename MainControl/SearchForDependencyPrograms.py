@@ -28,7 +28,3 @@ def search_for_league():
                         print(f"Found 'Game' folder at: {game_path}")
                         return game_path
     return None
-
-
-#print(search_for_league())
-print(search_for_ritobin())

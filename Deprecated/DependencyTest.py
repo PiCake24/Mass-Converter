@@ -1,6 +1,6 @@
 import unittest
 
-from MainControl.CheckAndInstallDependencies import check_ctdb, install_dependencies
+from Deprecated.CheckAndInstallDependencies import check_ctdb, install_dependencies
 
 
 class MyTestCase(unittest.TestCase):

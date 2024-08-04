@@ -6,7 +6,7 @@ def ritobin(ritobin_path, root_path, champion, skin_number):
         # Prepare the command list
         command_list = [
             ritobin_path,
-            os.path.join(root_path , 'data', 'characters', champion, 'skins', f'skin{skin_number}.bin'),
+            os.path.join(root_path , 'data', 'characters', champion, 'skins', f'skin{skin_number}.bin'), #TODO give ending as proper parameter, or just define direction
             os.path.join(root_path, 'data', 'characters', champion, 'skins', f'skin{skin_number}.py')
         ]
 
