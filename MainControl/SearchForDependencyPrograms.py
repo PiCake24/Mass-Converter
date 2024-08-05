@@ -10,6 +10,7 @@ def search_for_ritobin():
                 return os.path.join(root, "ritobin_gui.exe")
     return None
 
+
 def search_for_league():
     drives = [f"{d}:\\" for d in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' if os.path.exists(f"{d}:\\")]
     for root_dir in drives:
@@ -24,7 +25,7 @@ def search_for_league():
 
                     # Check if 'Game' is in 'League of Legends' directory
                     if 'Game' in os.listdir(lol_path):
-                        game_path = os.path.join(lol_path, 'Game')
-                        print(f"Found 'Game' folder at: {game_path}")
-                        return game_path
+                        game_path = os.path.join(lol_path, 'Game', 'League of Legends.exe')
+                        if os.path.exists(game_path):
+                            return game_path
     return None

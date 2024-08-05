@@ -1,7 +1,6 @@
-#check if a necessary variables are set
 
 def check_inputs(log_callback, path_variables):
-    if path_variables.riot_path is None:
+    if path_variables.league_path is None:
         log_callback("No Riot Path set")
         return False
     if path_variables.ritobin_path is None:

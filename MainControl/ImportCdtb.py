@@ -21,13 +21,11 @@ def download_hashes():
         update_default_hashfile(basename)
 
 
-def unpack_file(filepath, outputpath):
+def unpack_file(file_path, output_path):
 
-    hashfile = default_hashfile(filepath)
+    hashfile = default_hashfile(file_path)
 
-    wad = Wad(filepath, hashes=hashfile.load())
+    wad = Wad(file_path, hashes=hashfile.load())
 
     wad.guess_extensions()
-    wad.extract(outputpath, overwrite=True)
-
-unpack_file("D:\Riot Games\League of Legends\Game\DATA\FINAL\Champions\Akali.wad.client", "D:\Riot Games\League of Legends\Game\DATA\FINAL\Champions")
+    wad.extract(output_path, overwrite=True)
