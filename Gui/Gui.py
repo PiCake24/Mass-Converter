@@ -185,7 +185,7 @@ class ThreePanelsGUI:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-            # Create the top panel with back button
+        # Create the top panel with back button
         self.top_panel = tk.Frame(self.root, bg="lightblue", height=50)
         self.top_panel.pack(fill=tk.X)
         self.top_panel.pack_propagate(False)
@@ -201,9 +201,10 @@ class ThreePanelsGUI:
         # Riot Path
         self.riot_path_label = tk.Label(self.file_choosers_panel, text="Riot Path:", bg="lightgreen")
         self.riot_path_label.pack(anchor=tk.W, pady=5)
-        self.riot_path_entry = tk.Entry(self.file_choosers_panel, width=50)
-        self.riot_path_entry.pack(anchor=tk.W, pady=5)
-        self.riot_path_button = tk.Button(self.file_choosers_panel, text="Choose Riot Path",
+        self.league_path_entry = tk.Entry(self.file_choosers_panel, width=50)
+        self.league_path_entry.pack(anchor=tk.W, pady=5)
+        self.league_path_entry.insert(0, self.system_paths.league_path)
+        self.riot_path_button = tk.Button(self.file_choosers_panel, text="Choose League Path",
                                           command=self.choose_riot_path)
         self.riot_path_button.pack(anchor=tk.W, pady=5)
 
@@ -212,6 +213,7 @@ class ThreePanelsGUI:
         self.ritobin_path_label.pack(anchor=tk.W, pady=5)
         self.ritobin_path_entry = tk.Entry(self.file_choosers_panel, width=50)
         self.ritobin_path_entry.pack(anchor=tk.W, pady=5)
+        self.ritobin_path_entry.insert(0, self.system_paths.ritobin_path)
         self.ritobin_path_button = tk.Button(self.file_choosers_panel, text="Choose Ritobin Path",
                                              command=self.choose_ritobin_path)
         self.ritobin_path_button.pack(anchor=tk.W, pady=5)
@@ -221,32 +223,36 @@ class ThreePanelsGUI:
         self.root_path_label.pack(anchor=tk.W, pady=5)
         self.root_path_entry = tk.Entry(self.file_choosers_panel, width=50)
         self.root_path_entry.pack(anchor=tk.W, pady=5)
+        self.root_path_entry.insert(0, self.system_paths.root_path)
         self.root_path_button = tk.Button(self.file_choosers_panel, text="Choose Root Path",
                                           command=self.choose_root_path)
         self.root_path_button.pack(anchor=tk.W, pady=5)
 
-    def choose_riot_path(self): #TODO replace riotpath with leaguepath
-        path = os.path.normpath(filedialog.askopenfilename())
+    def choose_riot_path(self):
+        path = filedialog.askopenfilename()
         if path:
+            path = os.path.normpath(path)
             self.system_paths.riot_path = path
-            self.riot_path_entry.delete(0, tk.END)
-            self.riot_path_entry.insert(0, path)
+            self.league_path_entry.delete(0, tk.END)
+            self.league_path_entry.insert(0, path)
 
     def choose_ritobin_path(self):
-        path = os.path.normpath(filedialog.askopenfilename())
+        path = filedialog.askopenfilename()
         if path:
+            path = os.path.normpath(path)
             self.system_paths.ritobin_path = path
             self.ritobin_path_entry.delete(0, tk.END)
             self.ritobin_path_entry.insert(0, path)
 
     def choose_root_path(self):
-        path = os.path.normpath(filedialog.askopenfilename())
+        path = filedialog.askdirectory()
         if path:
+            path = os.path.normpath(path)
             self.system_paths.root_path = path
             self.root_path_entry.delete(0, tk.END)
             self.root_path_entry.insert(0, path)
 
-    def select_champions(self):
+    def select_champions(self): #TODO
         for widget in self.root.winfo_children():
             widget.destroy()
         self.top_panel = tk.Frame(self.root, bg="lightblue", height=50)
