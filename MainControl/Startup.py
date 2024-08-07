@@ -18,13 +18,14 @@ def startup(root):
     if system_paths is None:
         system_paths = SystemPaths(search_for_league(), search_for_ritobin(), "")
 
-    champion_list = load_champs(champion_list, system_paths)
+    if system_paths.league_path is not None:
+        # check if paths exist
+        if not os.path.isfile(system_paths.league_path):
+            system_paths = SystemPaths(search_for_league(), system_paths.ritobin_path, system_paths.root_path)
+        if not os.path.isfile(system_paths.ritobin_path):
+            system_paths = SystemPaths(system_paths.league_path, search_for_ritobin(), system_paths.root_path)
+        champion_list = load_champs(champion_list, system_paths)
 
-    # check if paths exist
-    if not os.path.isfile(system_paths.league_path):
-        system_paths = SystemPaths(search_for_league(), system_paths.ritobin_path, system_paths.root_path)
-    if not os.path.isfile(system_paths.ritobin_path):
-        system_paths = SystemPaths(system_paths.league_path, search_for_ritobin(), system_paths.root_path)
     #todo check if root folder exist, or is none
     print(system_paths.league_path)
     print(system_paths.ritobin_path)

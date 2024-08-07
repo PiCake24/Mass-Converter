@@ -62,8 +62,8 @@ def load_skins(line, champion):
     line = line.split('/', 1)[1]
     pattern = r'^skins/skin\d+\.bin$'
     if re.match(pattern, line):
-        print(line)
         line = line[10:-5]
+        line = int(line)
         if all(skin.skin_number != line for skin in champion.skin_list):
-            skin = Skin(int(line), 1)
+            skin = Skin(line, 1)
             champion.skin_list.append(skin)
