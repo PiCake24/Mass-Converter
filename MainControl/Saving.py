@@ -28,18 +28,21 @@ def saving(champion_list, system_paths):
 
 
 def dict_to_skin(d):
-    return Skin(d['skin_number'], d['size'], d['active'])
+    skin = Skin(d['skin_number'], d['size'])
+    skin.active = d['active']
+    return skin
 
 
 def dict_to_champion(d):
     skin_list = [dict_to_skin(s) for s in d['skin_list']]
-    champ = Champion(d['champion'], skin_list, d['active'])
+    champ = Champion(d['champion'], skin_list)
+    champ.active = d['active']
     champ.hidden = d['hidden']
     return champ
 
 
 def dict_to_system_paths(d):
-    return SystemPaths(d['riot_path'], d['ritobin_path'], d['root_path'])
+    return SystemPaths(d['league_path'], d['ritobin_path'], d['root_path'])
 
 
 def loading():
@@ -52,4 +55,4 @@ def loading():
         return champion_list, system_paths
 
     except FileNotFoundError or json.JSONDecodeError:
-        return None, None
+        return [], None

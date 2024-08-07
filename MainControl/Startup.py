@@ -17,8 +17,8 @@ def startup(root):
 
     if system_paths is None:
         system_paths = SystemPaths(search_for_league(), search_for_ritobin(), "")
-    if champion_list is None:
-        champion_list = load_champs(system_paths)
+
+    champion_list = load_champs(champion_list, system_paths)
 
     # check if paths exist
     if not os.path.isfile(system_paths.league_path):
@@ -28,8 +28,6 @@ def startup(root):
     #todo check if root folder exist, or is none
     print(system_paths.league_path)
     print(system_paths.ritobin_path)
-
-    #TODO Skins load skins from latest patch, look if new champ exist
 
     root.champion_list = champion_list
     root.system_paths = system_paths
